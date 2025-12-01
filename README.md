@@ -1,15 +1,37 @@
 # Mafia Game Night - Invitation Website
 
-A dark, atmospheric invitation website for your Mafia-themed game night. Built with React + Vite and designed to be deployed as a static site on Vercel.
+An ABSOLUTELY INSANE dark, atmospheric invitation website for your Mafia-themed game night. This isn't just an invitation - it's a full cinematic noir experience. Built with React + Vite and designed to be deployed as a static site on Vercel.
 
 ## Features
 
+### Core Features
 - **Immersive Mafia Theme**: Dark, cinematic design with 1920s mob aesthetic
 - **Player Registration**: Guests enter their "alias" to join
 - **Live Player Roster**: See all registered players in real-time
 - **localStorage Persistence**: All data stored in browser (no backend needed)
 - **Fully Responsive**: Works on desktop, tablet, and mobile
 - **Easy Customization**: Edit event details in one place
+
+### Atmospheric Effects (INSANE MODE ACTIVATED)
+- **Animated Rain**: 50 rain drops constantly falling
+- **Lightning Flashes**: Random lightning strikes illuminate the screen
+- **CRT Scanlines**: Old TV effect for authentic noir feel
+- **Film Burns & Scratches**: Dynamic old film damage effects
+- **Animated Cityscape**: 1920s city silhouette in the background
+- **Floating Smoke**: Multi-layer fog drifting across the screen
+- **Film Grain**: Animated noise texture like old footage
+- **Vignette Pulse**: Breathing dark edges
+- **Dust Particles**: Floating specks of light
+- **Moving Shadows**: Figures passing in the dark
+
+### Interactive Features
+- **Speakeasy Password**: First-time visitors must enter password "omerta" to gain access
+- **Bullet Holes**: Click anywhere to shoot bullet holes that stay on screen
+- **Muzzle Flash**: Screen flashes when you join the family
+- **Wanted Poster Generator**: Create your own wanted poster after joining
+- **Live Countdown Timer**: Real-time countdown to game night
+- **Konami Code Easter Egg**: Type ↑↑↓↓←→←→BA to unlock GOD MODE
+- **God Mode**: Reveals secret Mafia/Citizen role assignments
 
 ## Quick Start
 
@@ -109,7 +131,29 @@ Your site will be live at `https://your-project-name.vercel.app`
 ### Data Storage
 - **localStorage Key**: `mafia_players` - Array of all players
 - **localStorage Key**: `mafia_current_player` - Current user's nickname
+- **localStorage Key**: `mafia_password_entered` - Tracks if speakeasy password was entered
 - All data is stored in the browser (persists on page refresh)
+
+## Easter Eggs & Secrets
+
+### Speakeasy Password
+On first visit, you'll be prompted for a password. The password is **"omerta"** (Italian for "code of silence").
+
+### Konami Code
+Type the classic Konami code: **↑ ↑ ↓ ↓ ← → ← → B A** to unlock **GOD MODE**
+- Reveals a secret column in the player table
+- Shows who is Mafia (🔫) and who is Citizen (👤)
+- Every 3rd player is assigned as Mafia
+- Footer shows "GOD MODE ACTIVE"
+
+### Bullet Holes
+Click anywhere on the dark background to shoot bullet holes. They stay there permanently (or until refresh).
+
+### Wanted Poster
+After joining, click "GENERATE YOUR WANTED POSTER" to create a vintage wanted poster with your alias.
+
+### Muzzle Flash
+When you click "JOIN THE FAMILY", the screen flashes like a gunshot.
 
 ## Sharing the Invitation
 
@@ -119,15 +163,9 @@ Hey! You've been summoned to Mafia Game Night.
 Join the Family here: https://your-project-name.vercel.app
 ```
 
-## Features to Extend (Optional)
+## Performance Note
 
-If you want to add more features later:
-
-- **QR Code**: Generate a QR code for the invitation URL
-- **Email Share**: Add a mailto: link to email the invitation
-- **Theme Music**: Add subtle background music toggle
-- **Countdown Timer**: Show time remaining until game night
-- **Role Assignments**: Pre-assign roles to registered players
+This site has A LOT of animations and effects running simultaneously. It's designed for modern browsers and decent hardware. If performance is an issue, you can comment out some effects in the code.
 
 ## Tech Stack
 
