@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // ============================================
 // CUSTOMIZABLE EVENT DETAILS - EDIT THESE
@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 const EVENT_DETAILS = {
   date: '10.12.2025',
   location: "Filip Micevski's Town",
-  time: '20:00', // Add your preferred time here
+  time: '20:00',
   dressCode: 'Sharp suits, dark colors, fedoras optional',
   rules: [
     'Arrive on time - the Family waits for no one',
@@ -16,6 +16,9 @@ const EVENT_DETAILS = {
   ]
 }
 
+// Secret speakeasy password
+const SPEAKEASY_PASSWORD = 'omerta'
+
 // ============================================
 // TYPES
 // ============================================
@@ -24,17 +27,35 @@ interface Player {
   timestamp: number
 }
 
+interface BulletHole {
+  id: number
+  x: number
+  y: number
+}
+
 function App() {
   const [nickname, setNickname] = useState('')
   const [error, setError] = useState('')
   const [hasJoined, setHasJoined] = useState(false)
   const [players, setPlayers] = useState<Player[]>([])
   const [currentPlayer, setCurrentPlayer] = useState('')
+  const [bulletHoles, setBulletHoles] = useState<BulletHole[]>([])
+  const [showMuzzleFlash, setShowMuzzleFlash] = useState(false)
+  const [showWantedPoster, setShowWantedPoster] = useState(false)
+  const [konamiCode, setKonamiCode] = useState<string[]>([])
+  const [godMode, setGodMode] = useState(false)
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [hasPassword, setHasPassword] = useState(false)
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+
+  const appRef = useRef<HTMLDivElement>(null)
 
   // Load players from localStorage on mount
   useEffect(() => {
     const storedPlayers = localStorage.getItem('mafia_players')
     const storedNickname = localStorage.getItem('mafia_current_player')
+    const storedPassword = localStorage.getItem('mafia_password_entered')
 
     if (storedPlayers) {
       setPlayers(JSON.parse(storedPlayers))
@@ -44,7 +65,82 @@ function App() {
       setCurrentPlayer(storedNickname)
       setHasJoined(true)
     }
+
+    if (storedPassword) {
+      setHasPassword(true)
+    } else {
+      // Show password screen on first visit
+      setShowPassword(true)
+    }
   }, [])
+
+  // Countdown timer
+  useEffect(() => {
+    const targetDate = new Date(`${EVENT_DETAILS.date} ${EVENT_DETAILS.time}`)
+
+    const updateCountdown = () => {
+      const now = new Date().getTime()
+      const distance = targetDate.getTime() - now
+
+      if (distance < 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+        return
+      }
+
+      setCountdown({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000)
+      })
+    }
+
+    updateCountdown()
+    const interval = setInterval(updateCountdown, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Konami code Easter egg (↑ ↑ ↓ ↓ ← → ← → B A)
+  useEffect(() => {
+    const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const newCode = [...konamiCode, e.key].slice(-10)
+      setKonamiCode(newCode)
+
+      if (newCode.join(',') === konamiSequence.join(',')) {
+        setGodMode(true)
+        alert('🔫 GOD MODE ACTIVATED - The Don sees all 🔫')
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [konamiCode])
+
+  // Bullet holes on click
+  const handleClick = (e: React.MouseEvent) => {
+    if (e.target === appRef.current || (e.target as HTMLElement).classList.contains('app')) {
+      const newHole: BulletHole = {
+        id: Date.now(),
+        x: e.clientX,
+        y: e.clientY
+      }
+      setBulletHoles(prev => [...prev, newHole])
+    }
+  }
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (password.toLowerCase() === SPEAKEASY_PASSWORD) {
+      localStorage.setItem('mafia_password_entered', 'true')
+      setHasPassword(true)
+      setShowPassword(false)
+    } else {
+      alert('Wrong password. The speakeasy remains closed.')
+      setPassword('')
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -66,6 +162,10 @@ function App() {
       setError('This name is already taken by another member of the Family.')
       return
     }
+
+    // Muzzle flash effect
+    setShowMuzzleFlash(true)
+    setTimeout(() => setShowMuzzleFlash(false), 200)
 
     // Add player to the list
     const newPlayer: Player = {
@@ -103,9 +203,170 @@ function App() {
     }
   }
 
+  // Generate rain drops
+  const rainDrops = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    animationDuration: `${0.5 + Math.random() * 0.5}s`,
+    animationDelay: `${Math.random() * 2}s`
+  }))
+
+  // Generate film burns
+  const filmBurns = Array.from({ length: 5 }, (_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    width: `${30 + Math.random() * 50}px`,
+    height: `${30 + Math.random() * 50}px`
+  }))
+
+  // Generate scratches
+  const scratches = Array.from({ length: 10 }, (_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    height: `${100 + Math.random() * 200}px`,
+    animationDuration: `${3 + Math.random() * 5}s`,
+    animationDelay: `${Math.random() * 5}s`
+  }))
+
+  // Generate cityscape buildings
+  const buildings = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    left: `${i * 5}%`,
+    width: `${4 + Math.random() * 6}%`,
+    height: `${50 + Math.random() * 150}px`
+  }))
+
+  // Password screen
+  if (showPassword && !hasPassword) {
+    return (
+      <div className="app" ref={appRef} onClick={handleClick}>
+        <div className="noise-overlay"></div>
+        <div className="lightning"></div>
+        <div className="scanlines"></div>
+
+        <div className="container fade-in">
+          <h1 className="main-title">
+            SPEAK THE PASSWORD
+            <span className="subtitle">Entry to the Speakeasy</span>
+          </h1>
+
+          <div className="letter">
+            <p className="intro-text">
+              This establishment is for members only.
+              If you know the code, speak it now.
+            </p>
+            <p className="intro-text emphasis">
+              Hint: The Code of Silence
+            </p>
+
+            <form onSubmit={handlePasswordSubmit} className="join-form">
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="nickname-input"
+                placeholder="Enter password..."
+                autoComplete="off"
+              />
+              <button type="submit" className="submit-button">
+                ENTER
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {bulletHoles.map(hole => (
+          <div
+            key={hole.id}
+            className="bullet-hole"
+            style={{ left: hole.x, top: hole.y }}
+          />
+        ))}
+
+        <footer className="footer">
+          <p>The password is "omerta" - but you didn't hear it from me</p>
+        </footer>
+      </div>
+    )
+  }
+
   return (
-    <div className="app">
+    <div className="app" ref={appRef} onClick={handleClick}>
+      {/* Background effects */}
       <div className="noise-overlay"></div>
+      <div className="lightning"></div>
+      <div className="scanlines"></div>
+
+      {/* Rain */}
+      <div className="rain">
+        {rainDrops.map(drop => (
+          <div
+            key={drop.id}
+            className="rain-drop"
+            style={{
+              left: drop.left,
+              animationDuration: drop.animationDuration,
+              animationDelay: drop.animationDelay
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Film burns and scratches */}
+      <div className="film-burns">
+        {filmBurns.map(burn => (
+          <div
+            key={burn.id}
+            className="burn"
+            style={{
+              left: burn.left,
+              top: burn.top,
+              width: burn.width,
+              height: burn.height
+            }}
+          />
+        ))}
+        {scratches.map(scratch => (
+          <div
+            key={scratch.id}
+            className="scratch"
+            style={{
+              left: scratch.left,
+              height: scratch.height,
+              animationDuration: scratch.animationDuration,
+              animationDelay: scratch.animationDelay
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Cityscape */}
+      <div className="cityscape">
+        {buildings.map(building => (
+          <div
+            key={building.id}
+            className="building"
+            style={{
+              left: building.left,
+              width: building.width,
+              height: building.height
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Muzzle flash */}
+      {showMuzzleFlash && <div className="muzzle-flash"></div>}
+
+      {/* Bullet holes */}
+      {bulletHoles.map(hole => (
+        <div
+          key={hole.id}
+          className="bullet-hole"
+          style={{ left: hole.x, top: hole.y }}
+        />
+      ))}
 
       {!hasJoined ? (
         <div className="container fade-in">
@@ -137,6 +398,29 @@ function App() {
               <div className="detail-line">
                 <span className="label">LOCATION:</span>
                 <span className="value">{EVENT_DETAILS.location}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Countdown Timer */}
+          <div className="countdown">
+            <div className="countdown-title">TIME UNTIL THE GATHERING</div>
+            <div className="countdown-timer">
+              <div className="countdown-unit">
+                <div className="countdown-value">{countdown.days}</div>
+                <div className="countdown-label">Days</div>
+              </div>
+              <div className="countdown-unit">
+                <div className="countdown-value">{countdown.hours}</div>
+                <div className="countdown-label">Hours</div>
+              </div>
+              <div className="countdown-unit">
+                <div className="countdown-value">{countdown.minutes}</div>
+                <div className="countdown-label">Minutes</div>
+              </div>
+              <div className="countdown-unit">
+                <div className="countdown-value">{countdown.seconds}</div>
+                <div className="countdown-label">Seconds</div>
               </div>
             </div>
           </div>
@@ -216,6 +500,53 @@ function App() {
             </p>
           </div>
 
+          {/* Wanted Poster */}
+          {!showWantedPoster && (
+            <button
+              onClick={() => setShowWantedPoster(true)}
+              className="submit-button"
+              style={{ marginTop: '2rem' }}
+            >
+              GENERATE YOUR WANTED POSTER
+            </button>
+          )}
+
+          {showWantedPoster && (
+            <div className="wanted-poster">
+              <div className="wanted-title">WANTED</div>
+              <div className="wanted-alias">{currentPlayer}</div>
+              <div className="wanted-details">
+                <p>ARMED AND EXTREMELY DANGEROUS</p>
+                <p>Last seen: {EVENT_DETAILS.location}</p>
+                <p>Wanted for: Conspiracy, Racketeering, Looking Too Sharp</p>
+                <p style={{ marginTop: '1rem', fontWeight: 'bold' }}>REWARD: $10,000</p>
+              </div>
+            </div>
+          )}
+
+          {/* Countdown Timer */}
+          <div className="countdown">
+            <div className="countdown-title">TIME UNTIL THE GATHERING</div>
+            <div className="countdown-timer">
+              <div className="countdown-unit">
+                <div className="countdown-value">{countdown.days}</div>
+                <div className="countdown-label">Days</div>
+              </div>
+              <div className="countdown-unit">
+                <div className="countdown-value">{countdown.hours}</div>
+                <div className="countdown-label">Hours</div>
+              </div>
+              <div className="countdown-unit">
+                <div className="countdown-value">{countdown.minutes}</div>
+                <div className="countdown-label">Minutes</div>
+              </div>
+              <div className="countdown-unit">
+                <div className="countdown-value">{countdown.seconds}</div>
+                <div className="countdown-label">Seconds</div>
+              </div>
+            </div>
+          </div>
+
           <div className="event-details">
             <h2 className="section-title">OPERATIONAL DETAILS</h2>
 
@@ -257,6 +588,7 @@ function App() {
                       <th>#</th>
                       <th>ALIAS</th>
                       <th>RECRUITED</th>
+                      {godMode && <th>SECRET ROLE</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -268,6 +600,11 @@ function App() {
                           hour: '2-digit',
                           minute: '2-digit'
                         })}</td>
+                        {godMode && (
+                          <td style={{ color: index % 3 === 0 ? '#dc143c' : '#d4af37' }}>
+                            {index % 3 === 0 ? '🔫 MAFIA' : '👤 CITIZEN'}
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -284,6 +621,7 @@ function App() {
 
       <footer className="footer">
         <p>Burn this message after reading</p>
+        {godMode && <p style={{ color: '#d4af37', marginTop: '0.5rem' }}>🔫 GOD MODE ACTIVE 🔫</p>}
       </footer>
     </div>
   )

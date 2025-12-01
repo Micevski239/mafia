@@ -194,6 +194,362 @@ body::after {
 }
 
 /* ============================================
+   RAIN EFFECT
+   ============================================ */
+.rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0.15;
+}
+
+.rain-drop {
+  position: absolute;
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3));
+  animation: rainFall linear infinite;
+}
+
+@keyframes rainFall {
+  to {
+    transform: translateY(100vh);
+  }
+}
+
+/* ============================================
+   LIGHTNING FLASH
+   ============================================ */
+.lightning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0);
+  animation: lightning 20s infinite;
+}
+
+@keyframes lightning {
+  0%, 100% {
+    opacity: 0;
+  }
+  15%, 17%, 19% {
+    opacity: 0;
+  }
+  16%, 18% {
+    opacity: 0.3;
+    background: rgba(200, 220, 255, 0.3);
+  }
+  60%, 62% {
+    opacity: 0;
+  }
+  61% {
+    opacity: 0.5;
+    background: rgba(200, 220, 255, 0.5);
+  }
+}
+
+/* ============================================
+   SCANLINES (CRT Effect)
+   ============================================ */
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 6;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  animation: scanlineScroll 10s linear infinite;
+}
+
+@keyframes scanlineScroll {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+/* ============================================
+   FILM BURNS/SCRATCHES
+   ============================================ */
+.film-burns {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 7;
+  mix-blend-mode: screen;
+  opacity: 0.1;
+}
+
+.burn {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 200, 100, 0.8) 0%, transparent 70%);
+  animation: burnFlicker 0.1s infinite;
+}
+
+@keyframes burnFlicker {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+.scratch {
+  position: absolute;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  animation: scratchMove linear infinite;
+}
+
+@keyframes scratchMove {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0.2;
+  }
+}
+
+/* ============================================
+   CITYSCAPE SILHOUETTE
+   ============================================ */
+.cityscape {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.4;
+}
+
+.building {
+  position: absolute;
+  bottom: 0;
+  background: linear-gradient(to top, #000 0%, #0a0a0a 100%);
+  animation: buildingLights 5s infinite;
+}
+
+@keyframes buildingLights {
+  0%, 100% {
+    box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.1);
+  }
+  50% {
+    box-shadow: inset 0 0 40px rgba(212, 175, 55, 0.2);
+  }
+}
+
+/* ============================================
+   BULLET HOLES
+   ============================================ */
+.bullet-hole {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  z-index: 10;
+  animation: bulletImpact 0.3s ease-out;
+}
+
+.bullet-hole::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, #000 30%, transparent 70%);
+  border-radius: 50%;
+}
+
+.bullet-hole::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+@keyframes bulletImpact {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   MUZZLE FLASH
+   ============================================ */
+.muzzle-flash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  background: radial-gradient(circle at center, rgba(255, 200, 100, 0.8) 0%, transparent 30%);
+  animation: flash 0.2s ease-out;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   WANTED POSTER
+   ============================================ */
+.wanted-poster {
+  background: linear-gradient(to bottom, #e8d7b8 0%, #c9b896 100%);
+  border: 8px solid #8b7355;
+  padding: 2rem;
+  margin: 2rem 0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  position: relative;
+  color: #2a1810;
+}
+
+.wanted-poster::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='paper'%3E%3CfeTurbulence baseFrequency='0.04' numOctaves='5' /%3E%3CfeColorMatrix values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23paper)'/%3E%3C/svg%3E");
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.wanted-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  border-bottom: 4px solid #2a1810;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.wanted-alias {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  text-align: center;
+  font-weight: 700;
+  margin: 1rem 0;
+  text-transform: uppercase;
+}
+
+.wanted-details {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* ============================================
+   COUNTDOWN TIMER
+   ============================================ */
+.countdown {
+  background: var(--bg-card);
+  border: 2px solid var(--gold);
+  padding: 2rem;
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.countdown-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 1rem;
+}
+
+.countdown-timer {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.countdown-value {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  color: var(--text-primary);
+  font-weight: 900;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  animation: timerPulse 1s infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.countdown-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+}
+
+/* ============================================
    CONTAINER & LAYOUT
    ============================================ */
 .container {
