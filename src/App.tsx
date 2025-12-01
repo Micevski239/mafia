@@ -43,6 +43,7 @@ function App() {
   const [hasPassword, setHasPassword] = useState(false)
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [isBurning, setIsBurning] = useState(false)
 
   // Load players from Firebase and set up real-time listener
   useEffect(() => {
@@ -211,6 +212,18 @@ function App() {
     }
   }
 
+  const handleBurnMessage = () => {
+    if (window.confirm('Are you sure you want to burn this message? All evidence will be destroyed.')) {
+      setIsBurning(true)
+
+      // After burn animation completes, clear everything
+      setTimeout(() => {
+        localStorage.clear()
+        window.location.reload()
+      }, 3000) // 3 second burn animation
+    }
+  }
+
   // Generate rain drops
   const rainDrops = Array.from({ length: 50 }, (_, i) => ({
     id: i,
@@ -278,8 +291,25 @@ function App() {
         </div>
 
         <footer className="footer">
-          <p>Burn this message after reading</p>
+          <button onClick={handleBurnMessage} className="burn-button">
+            🔥 Burn this message after reading 🔥
+          </button>
         </footer>
+
+        {/* Burn Effect Overlay */}
+        {isBurning && (
+          <div className="burn-overlay">
+            <div className="flames">
+              {Array.from({ length: 20 }, (_, i) => (
+                <div key={i} className="flame" style={{
+                  left: `${i * 5}%`,
+                  animationDelay: `${Math.random() * 0.5}s`
+                }} />
+              ))}
+            </div>
+            <div className="burn-message">MESSAGE DESTROYED</div>
+          </div>
+        )}
       </div>
     )
   }
@@ -586,9 +616,26 @@ function App() {
       )}
 
       <footer className="footer">
-        <p>Burn this message after reading</p>
+        <button onClick={handleBurnMessage} className="burn-button">
+          🔥 Burn this message after reading 🔥
+        </button>
         {godMode && <p style={{ color: '#d4af37', marginTop: '0.5rem' }}>🔫 GOD MODE ACTIVE 🔫</p>}
       </footer>
+
+      {/* Burn Effect Overlay */}
+      {isBurning && (
+        <div className="burn-overlay">
+          <div className="flames">
+            {Array.from({ length: 20 }, (_, i) => (
+              <div key={i} className="flame" style={{
+                left: `${i * 5}%`,
+                animationDelay: `${Math.random() * 0.5}s`
+              }} />
+            ))}
+          </div>
+          <div className="burn-message">MESSAGE DESTROYED</div>
+        </div>
+      )}
     </div>
   )
 }

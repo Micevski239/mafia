@@ -1047,6 +1047,142 @@ body::after {
   opacity: 0.6;
 }
 
+.burn-button {
+  background: transparent;
+  border: 2px solid var(--red);
+  color: var(--red);
+  padding: 1rem 2rem;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.burn-button:hover {
+  background: var(--red);
+  color: var(--text-primary);
+  box-shadow: 0 0 20px rgba(220, 20, 60, 0.5);
+  animation: buttonFlicker 0.1s infinite;
+}
+
+@keyframes buttonFlicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.9; }
+}
+
+/* ============================================
+   BURN EFFECT OVERLAY
+   ============================================ */
+.burn-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  pointer-events: none;
+  animation: pageChar 3s ease-out forwards;
+}
+
+@keyframes pageChar {
+  0% {
+    background: rgba(0, 0, 0, 0);
+  }
+  50% {
+    background: rgba(30, 10, 0, 0.5);
+  }
+  100% {
+    background: rgba(0, 0, 0, 1);
+  }
+}
+
+.flames {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.flame {
+  position: absolute;
+  bottom: -50%;
+  width: 5%;
+  height: 100%;
+  background: linear-gradient(
+    to top,
+    #ff4500 0%,
+    #ff8c00 20%,
+    #ffa500 40%,
+    #ff6347 60%,
+    transparent 100%
+  );
+  border-radius: 50% 50% 0 0;
+  filter: blur(15px);
+  animation: flameRise 2s ease-out forwards;
+  transform-origin: bottom center;
+}
+
+@keyframes flameRise {
+  0% {
+    transform: translateY(0) scaleX(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50vh) scaleX(1.5) scaleY(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100vh) scaleX(2) scaleY(1.5);
+    opacity: 0;
+  }
+}
+
+.burn-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--red-bright);
+  text-shadow:
+    0 0 20px #ff4500,
+    0 0 40px #ff8c00,
+    0 0 60px #ffa500;
+  letter-spacing: 0.3em;
+  text-align: center;
+  animation: messageAppear 3s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes messageAppear {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  30% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 /* ============================================
    RESPONSIVE
    ============================================ */
