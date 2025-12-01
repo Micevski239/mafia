@@ -13,11 +13,10 @@ An ABSOLUTELY INSANE dark, atmospheric invitation website for your Mafia-themed 
 - **Easy Customization**: Edit event details in one place
 
 ### Atmospheric Effects (INSANE MODE ACTIVATED)
+- **Custom Background Image**: Dark atmospheric photo overlay
 - **Animated Rain**: 50 rain drops constantly falling
-- **Lightning Flashes**: Random lightning strikes illuminate the screen
 - **CRT Scanlines**: Old TV effect for authentic noir feel
 - **Film Burns & Scratches**: Dynamic old film damage effects
-- **Animated Cityscape**: 1920s city silhouette in the background
 - **Floating Smoke**: Multi-layer fog drifting across the screen
 - **Film Grain**: Animated noise texture like old footage
 - **Vignette Pulse**: Breathing dark edges
@@ -25,9 +24,7 @@ An ABSOLUTELY INSANE dark, atmospheric invitation website for your Mafia-themed 
 - **Moving Shadows**: Figures passing in the dark
 
 ### Interactive Features
-- **Speakeasy Password**: First-time visitors must enter password "omerta" to gain access
-- **Bullet Holes**: Click anywhere to shoot bullet holes that stay on screen
-- **Muzzle Flash**: Screen flashes when you join the family
+- **6-Digit Index Password**: First-time visitors must enter their 6-digit index number to gain access
 - **Wanted Poster Generator**: Create your own wanted poster after joining
 - **Live Countdown Timer**: Real-time countdown to game night
 - **Konami Code Easter Egg**: Type ↑↑↓↓←→←→BA to unlock GOD MODE
@@ -136,8 +133,11 @@ Your site will be live at `https://your-project-name.vercel.app`
 
 ## Easter Eggs & Secrets
 
-### Speakeasy Password
-On first visit, you'll be prompted for a password. The password is **"omerta"** (Italian for "code of silence").
+### 6-Digit Index Password
+On first visit, you'll be prompted for a password. Enter **any 6-digit number** (your student/employee index).
+- Hint shown: "Your Index"
+- Accepts any 6-digit number (e.g., 123456, 000000, etc.)
+- Password persists in localStorage
 
 ### Konami Code
 Type the classic Konami code: **↑ ↑ ↓ ↓ ← → ← → B A** to unlock **GOD MODE**
@@ -146,14 +146,8 @@ Type the classic Konami code: **↑ ↑ ↓ ↓ ← → ← → B A** to unlock 
 - Every 3rd player is assigned as Mafia
 - Footer shows "GOD MODE ACTIVE"
 
-### Bullet Holes
-Click anywhere on the dark background to shoot bullet holes. They stay there permanently (or until refresh).
-
 ### Wanted Poster
 After joining, click "GENERATE YOUR WANTED POSTER" to create a vintage wanted poster with your alias.
-
-### Muzzle Flash
-When you click "JOIN THE FAMILY", the screen flashes like a gunshot.
 
 ## Sharing the Invitation
 
