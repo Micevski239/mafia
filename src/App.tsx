@@ -7,7 +7,7 @@ const EVENT_DETAILS = {
   date: '10.12.2025',
   location: "Filip Micevski's Town",
   time: '20:00',
-  dressCode: 'Sharp suits, dark colors, fedoras optional',
+  dressCode: 'Casual',
   rules: [
     'Arrive on time - the Family waits for no one',
     'Keep your identity secret until the game begins',
@@ -66,7 +66,10 @@ function App() {
 
   // Countdown timer
   useEffect(() => {
-    const targetDate = new Date(`${EVENT_DETAILS.date} ${EVENT_DETAILS.time}`)
+    // Parse date from DD.MM.YYYY format to YYYY-MM-DD
+    const dateParts = EVENT_DETAILS.date.split('.')
+    const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${EVENT_DETAILS.time}:00`
+    const targetDate = new Date(formattedDate)
 
     const updateCountdown = () => {
       const now = new Date().getTime()
