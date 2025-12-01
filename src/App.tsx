@@ -163,10 +163,6 @@ function App() {
       return
     }
 
-    // Muzzle flash effect
-    setShowMuzzleFlash(true)
-    setTimeout(() => setShowMuzzleFlash(false), 200)
-
     // Add player to the list
     const newPlayer: Player = {
       nickname: trimmedNickname,
