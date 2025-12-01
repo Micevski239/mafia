@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 // ============================================
 // CUSTOMIZABLE EVENT DETAILS - EDIT THESE
@@ -16,8 +16,8 @@ const EVENT_DETAILS = {
   ]
 }
 
-// Secret speakeasy password
-const SPEAKEASY_PASSWORD = 'omerta'
+// Secret speakeasy password - any 6 digit number (their index)
+const isValidPassword = (pass: string) => /^\d{6}$/.test(pass)
 
 // ============================================
 // TYPES
@@ -27,20 +27,12 @@ interface Player {
   timestamp: number
 }
 
-interface BulletHole {
-  id: number
-  x: number
-  y: number
-}
-
 function App() {
   const [nickname, setNickname] = useState('')
   const [error, setError] = useState('')
   const [hasJoined, setHasJoined] = useState(false)
   const [players, setPlayers] = useState<Player[]>([])
   const [currentPlayer, setCurrentPlayer] = useState('')
-  const [bulletHoles, setBulletHoles] = useState<BulletHole[]>([])
-  const [showMuzzleFlash, setShowMuzzleFlash] = useState(false)
   const [showWantedPoster, setShowWantedPoster] = useState(false)
   const [konamiCode, setKonamiCode] = useState<string[]>([])
   const [godMode, setGodMode] = useState(false)
@@ -48,8 +40,6 @@ function App() {
   const [hasPassword, setHasPassword] = useState(false)
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-
-  const appRef = useRef<HTMLDivElement>(null)
 
   // Load players from localStorage on mount
   useEffect(() => {
@@ -118,26 +108,14 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [konamiCode])
 
-  // Bullet holes on click
-  const handleClick = (e: React.MouseEvent) => {
-    if (e.target === appRef.current || (e.target as HTMLElement).classList.contains('app')) {
-      const newHole: BulletHole = {
-        id: Date.now(),
-        x: e.clientX,
-        y: e.clientY
-      }
-      setBulletHoles(prev => [...prev, newHole])
-    }
-  }
-
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (password.toLowerCase() === SPEAKEASY_PASSWORD) {
+    if (isValidPassword(password)) {
       localStorage.setItem('mafia_password_entered', 'true')
       setHasPassword(true)
       setShowPassword(false)
     } else {
-      alert('Wrong password. The speakeasy remains closed.')
+      alert('Wrong password. Enter your 6-digit index number.')
       setPassword('')
     }
   }
@@ -225,18 +203,10 @@ function App() {
     animationDelay: `${Math.random() * 5}s`
   }))
 
-  // Generate cityscape buildings
-  const buildings = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    left: `${i * 5}%`,
-    width: `${4 + Math.random() * 6}%`,
-    height: `${50 + Math.random() * 150}px`
-  }))
-
   // Password screen
   if (showPassword && !hasPassword) {
     return (
-      <div className="app" ref={appRef} onClick={handleClick}>
+      <div className="app">
         <div className="noise-overlay"></div>
         <div className="lightning"></div>
         <div className="scanlines"></div>
@@ -253,17 +223,18 @@ function App() {
               If you know the code, speak it now.
             </p>
             <p className="intro-text emphasis">
-              Hint: The Code of Silence
+              Hint: Your Index
             </p>
 
             <form onSubmit={handlePasswordSubmit} className="join-form">
               <input
-                type="password"
+                type="text"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="nickname-input"
-                placeholder="Enter password..."
+                placeholder="Enter your 6-digit index..."
                 autoComplete="off"
+                maxLength={6}
               />
               <button type="submit" className="submit-button">
                 ENTER
@@ -272,23 +243,15 @@ function App() {
           </div>
         </div>
 
-        {bulletHoles.map(hole => (
-          <div
-            key={hole.id}
-            className="bullet-hole"
-            style={{ left: hole.x, top: hole.y }}
-          />
-        ))}
-
         <footer className="footer">
-          <p>The password is "omerta" - but you didn't hear it from me</p>
+          <p>Burn this message after reading</p>
         </footer>
       </div>
     )
   }
 
   return (
-    <div className="app" ref={appRef} onClick={handleClick}>
+    <div className="app">
       {/* Background effects */}
       <div className="noise-overlay"></div>
       <div className="lightning"></div>
@@ -336,33 +299,6 @@ function App() {
           />
         ))}
       </div>
-
-      {/* Cityscape */}
-      <div className="cityscape">
-        {buildings.map(building => (
-          <div
-            key={building.id}
-            className="building"
-            style={{
-              left: building.left,
-              width: building.width,
-              height: building.height
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Muzzle flash */}
-      {showMuzzleFlash && <div className="muzzle-flash"></div>}
-
-      {/* Bullet holes */}
-      {bulletHoles.map(hole => (
-        <div
-          key={hole.id}
-          className="bullet-hole"
-          style={{ left: hole.x, top: hole.y }}
-        />
-      ))}
 
       {!hasJoined ? (
         <div className="container fade-in">
