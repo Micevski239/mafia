@@ -213,15 +213,13 @@ function App() {
   }
 
   const handleBurnMessage = () => {
-    if (window.confirm('Are you sure you want to burn this message? All evidence will be destroyed.')) {
-      setIsBurning(true)
+    setIsBurning(true)
 
-      // After burn animation completes, clear everything
-      setTimeout(() => {
-        localStorage.clear()
-        window.location.reload()
-      }, 3000) // 3 second burn animation
-    }
+    // After burn animation completes, clear everything
+    setTimeout(() => {
+      localStorage.clear()
+      window.location.reload()
+    }, 3000) // 3 second burn animation
   }
 
   // Generate rain drops
