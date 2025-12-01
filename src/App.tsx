@@ -188,13 +188,6 @@ function App() {
     }
   }
 
-  const handleReset = () => {
-    localStorage.removeItem('mafia_current_player')
-    setCurrentPlayer('')
-    setHasJoined(false)
-    setNickname('')
-  }
-
   const clearAllPlayers = async () => {
     if (window.confirm('Are you sure you want to clear all players? This cannot be undone.')) {
       try {
@@ -606,10 +599,6 @@ function App() {
               </div>
             </div>
           )}
-
-          <button onClick={handleReset} className="back-button">
-            Change Alias
-          </button>
         </div>
       )}
 
