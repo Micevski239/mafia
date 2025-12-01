@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { database } from './firebase'
+import { ref, onValue, push, set, remove } from 'firebase/database'
 
 // ============================================
 // CUSTOMIZABLE EVENT DETAILS - EDIT THESE
@@ -23,6 +25,7 @@ const isValidPassword = (pass: string) => /^\d{6}$/.test(pass)
 // TYPES
 // ============================================
 interface Player {
+  id?: string
   nickname: string
   timestamp: number
 }
@@ -41,15 +44,11 @@ function App() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
-  // Load players from localStorage on mount
+  // Load players from Firebase and set up real-time listener
   useEffect(() => {
-    const storedPlayers = localStorage.getItem('mafia_players')
+    // Check localStorage for current player and password (still stored locally)
     const storedNickname = localStorage.getItem('mafia_current_player')
     const storedPassword = localStorage.getItem('mafia_password_entered')
-
-    if (storedPlayers) {
-      setPlayers(JSON.parse(storedPlayers))
-    }
 
     if (storedNickname) {
       setCurrentPlayer(storedNickname)
@@ -62,6 +61,27 @@ function App() {
       // Show password screen on first visit
       setShowPassword(true)
     }
+
+    // Set up real-time listener for players from Firebase
+    const playersRef = ref(database, 'players')
+    const unsubscribe = onValue(playersRef, (snapshot) => {
+      const data = snapshot.val()
+      if (data) {
+        // Convert Firebase object to array and sort by timestamp
+        const playersArray = Object.entries(data).map(([key, value]: [string, any]) => ({
+          id: key,
+          nickname: value.nickname,
+          timestamp: value.timestamp
+        }))
+        playersArray.sort((a, b) => a.timestamp - b.timestamp)
+        setPlayers(playersArray)
+      } else {
+        setPlayers([])
+      }
+    })
+
+    // Cleanup listener on unmount
+    return () => unsubscribe()
   }, [])
 
   // Countdown timer
@@ -123,7 +143,7 @@ function App() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     const trimmedNickname = nickname.trim()
@@ -144,22 +164,27 @@ function App() {
       return
     }
 
-    // Add player to the list
-    const newPlayer: Player = {
+    // Add player to Firebase
+    const newPlayer = {
       nickname: trimmedNickname,
       timestamp: Date.now()
     }
 
-    const updatedPlayers = [...players, newPlayer]
+    try {
+      const playersRef = ref(database, 'players')
+      const newPlayerRef = push(playersRef)
+      await set(newPlayerRef, newPlayer)
 
-    // Save to localStorage
-    localStorage.setItem('mafia_players', JSON.stringify(updatedPlayers))
-    localStorage.setItem('mafia_current_player', trimmedNickname)
+      // Save current player to localStorage (local only)
+      localStorage.setItem('mafia_current_player', trimmedNickname)
 
-    setPlayers(updatedPlayers)
-    setCurrentPlayer(trimmedNickname)
-    setHasJoined(true)
-    setError('')
+      setCurrentPlayer(trimmedNickname)
+      setHasJoined(true)
+      setError('')
+    } catch (error) {
+      console.error('Error adding player:', error)
+      setError('Failed to join. Please try again.')
+    }
   }
 
   const handleReset = () => {
@@ -169,14 +194,20 @@ function App() {
     setNickname('')
   }
 
-  const clearAllPlayers = () => {
+  const clearAllPlayers = async () => {
     if (window.confirm('Are you sure you want to clear all players? This cannot be undone.')) {
-      localStorage.removeItem('mafia_players')
-      localStorage.removeItem('mafia_current_player')
-      setPlayers([])
-      setCurrentPlayer('')
-      setHasJoined(false)
-      setNickname('')
+      try {
+        const playersRef = ref(database, 'players')
+        await remove(playersRef)
+
+        localStorage.removeItem('mafia_current_player')
+        setCurrentPlayer('')
+        setHasJoined(false)
+        setNickname('')
+      } catch (error) {
+        console.error('Error clearing players:', error)
+        alert('Failed to clear players. Please try again.')
+      }
     }
   }
 
@@ -398,7 +429,7 @@ function App() {
                   </thead>
                   <tbody>
                     {players.map((player, index) => (
-                      <tr key={player.timestamp}>
+                      <tr key={player.id || player.timestamp}>
                         <td>{index + 1}</td>
                         <td className="nickname-cell">{player.nickname}</td>
                         <td>{new Date(player.timestamp).toLocaleTimeString('en-US', {
@@ -528,7 +559,7 @@ function App() {
                   </thead>
                   <tbody>
                     {players.map((player, index) => (
-                      <tr key={player.timestamp} className={player.nickname === currentPlayer ? 'current-player' : ''}>
+                      <tr key={player.id || player.timestamp} className={player.nickname === currentPlayer ? 'current-player' : ''}>
                         <td>{index + 1}</td>
                         <td className="nickname-cell">{player.nickname}</td>
                         <td>{new Date(player.timestamp).toLocaleTimeString('en-US', {
